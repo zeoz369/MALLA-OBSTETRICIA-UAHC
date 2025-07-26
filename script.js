@@ -74,10 +74,9 @@ function guardarAprobados(aprobados) {
   localStorage.setItem('mallaAprobados', JSON.stringify(aprobados));
 }
 
-// Actualiza qué ramos están desbloqueados o bloqueados según prerrequisitos y créditos especiales
+// Actualiza qué ramos están desbloqueados o bloqueados según prerrequisitos 
 function actualizarDesbloqueos() {
   const aprobados = obtenerAprobados();
-  const totalCreditos = calcularCreditosAprobados();
 
   for (const [destino, reqs] of Object.entries(prerequisitos)) {
     const elem = document.getElementById(destino);

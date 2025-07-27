@@ -46,8 +46,11 @@ function actualizarDesbloqueos() {
     if (!elem) continue;
 
     // Verificar si se cumplen prerrequisitos normales
-    let puedeDesbloquear = reqs.every(r => aprobados.includes(r));
+let puedeDesbloquear = reqs.every(r => aprobados.includes(r));
 
+if (puedeDesbloquear) {
+  elem.classList.remove('bloqueado');
+}
       // Si está aprobado, no debe estar bloqueado
       elem.classList.remove('bloqueado');
     }

@@ -1,8 +1,8 @@
 // Prerrequisitos de cada ramo (ramos que deben estar aprobados para desbloquear este)
 const prerequisitos = {
   'anatomia2': ['anatomia1'],
-  'microbio': ['biologia‎'],
-  'bioquimica‎': ['quimica‎'],
+  'microbio': ['biologia'],
+  'bioquimica': ['quimica'],
   'estrategias2': ['estrategias1'],
   'biodesarrollo': ['biologia'],
   'ingles2': ['ingles1'],
@@ -12,7 +12,7 @@ const prerequisitos = {
   'farmacologia': ['pauxilios'],
   'etica': ['derechosh'],
   'ingles3': ['ingles2'],
-  'obstetricia3': ['obstetricia2‎'],
+  'obstetricia3': ['obstetricia2'],
   'gine3': ['gine2'],
   'neopato': ['neofisio'],
   'saludsex2': ['saludsex1'],
@@ -27,7 +27,7 @@ const prerequisitos = {
   'internado_electivo2': ['internado_electivo1'],
 };
 
-// Funciones para guardar y cargar progreso en localStorage
+// Guardar y obtener ramos aprobados desde localStorage
 function obtenerAprobados() {
   const data = localStorage.getItem('mallaAprobados');
   return data ? JSON.parse(data) : [];
@@ -37,7 +37,7 @@ function guardarAprobados(aprobados) {
   localStorage.setItem('mallaAprobados', JSON.stringify(aprobados));
 }
 
-// Actualiza qué ramos están desbloqueados o bloqueados según prerrequisitos 
+// Actualiza los ramos desbloqueados en función de los aprobados
 function actualizarDesbloqueos() {
   const aprobados = obtenerAprobados();
 
@@ -45,51 +45,62 @@ function actualizarDesbloqueos() {
     const elem = document.getElementById(destino);
     if (!elem) continue;
 
-    // Verificar si se cumplen prerrequisitos normales
-let puedeDesbloquear = reqs.every(r => aprobados.includes(r));
-
-if (puedeDesbloquear) {
-  elem.classList.remove('bloqueado');
-}
-      // Si está aprobado, no debe estar bloqueado
+    const puedeDesbloquear = reqs.every(r => aprobados.includes(r));
+    if (puedeDesbloquear) {
       elem.classList.remove('bloqueado');
     }
   }
 }
 
-// Maneja el clic para aprobar o desaprobar un ramo (solo si no está bloqueado)
+// Al hacer clic en un ramo
 function aprobar(e) {
   const ramo = e.currentTarget;
   if (ramo.classList.contains('bloqueado')) return;
 
   ramo.classList.toggle('aprobado');
 
-  const aprobados = obtenerAprobados();
+  let aprobados = obtenerAprobados();
   if (ramo.classList.contains('aprobado')) {
-    if (!aprobados.includes(ramo.id)) aprobados.push(ramo.id);
+    if (!aprobados.includes(ramo.id)) {
+      aprobados.push(ramo.id);
+    }
   } else {
-    const idx = aprobados.indexOf(ramo.id);
-    if (idx > -1) aprobados.splice(idx, 1);
+    aprobados = aprobados.filter(id => id !== ramo.id);
   }
-  guardarAprobados(aprobados);
 
+  guardarAprobados(aprobados);
   actualizarDesbloqueos();
 }
 
-// Al cargar la página, asignar eventos, cargar progreso y actualizar desbloqueos
+// Al cargar la página
 window.addEventListener('DOMContentLoaded', () => {
   const todosRamos = document.querySelectorAll('.ramo');
-
   const aprobados = obtenerAprobados();
+
+  // Marcar visualmente los ramos aprobados
   todosRamos.forEach(ramo => {
     if (aprobados.includes(ramo.id)) {
       ramo.classList.add('aprobado');
     }
   });
 
+  // Asignar eventos de clic
   todosRamos.forEach(ramo => {
     ramo.addEventListener('click', aprobar);
   });
 
   actualizarDesbloqueos();
+
+  // Validación opcional: mostrar en consola los errores de ID
+  for (const [destino, reqs] of Object.entries(prerequisitos)) {
+    const elem = document.getElementById(destino);
+    if (!elem) console.warn(`⚠️ El ramo "${destino}" no existe en el HTML`);
+
+    reqs.forEach(r => {
+      const prereqElem = document.getElementById(r);
+      if (!prereqElem) {
+        console.warn(`⚠️ El prerrequisito "${r}" para "${destino}" no existe en el HTML`);
+      }
+    });
+  }
 });

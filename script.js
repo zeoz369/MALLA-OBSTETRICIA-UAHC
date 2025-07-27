@@ -4,7 +4,6 @@ const prerequisitos = {
   'microbio': ['biologia'],
   'bioquimica': ['quimica'],
   'estrategias2': ['estrategias1'],
-  'biodesarrollo': ['biologia'],
   'ingles2': ['ingles1'],
   'tecnicas': ['fundamentos'],
   'obstetricia2': ['obstetricia1'],

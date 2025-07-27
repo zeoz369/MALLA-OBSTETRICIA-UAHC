@@ -40,16 +40,24 @@ function guardarAprobados(aprobados) {
 // Actualiza los ramos desbloqueados en función de los aprobados
 function actualizarDesbloqueos() {
   const aprobados = obtenerAprobados();
+  const todosRamos = document.querySelectorAll('.ramo');
 
-  for (const [destino, reqs] of Object.entries(prerequisitos)) {
-    const elem = document.getElementById(destino);
-    if (!elem) continue;
+  todosRamos.forEach(elem => {
+    const id = elem.id;
+    const reqs = prerequisitos[id];
 
-    const puedeDesbloquear = reqs.every(r => aprobados.includes(r));
-    if (puedeDesbloquear) {
+    if (!reqs) {
+      // Sin prerrequisitos → desbloqueado
       elem.classList.remove('bloqueado');
+    } else {
+      const puede = reqs.every(r => aprobados.includes(r));
+      if (puede) {
+        elem.classList.remove('bloqueado');
+      } else {
+        elem.classList.add('bloqueado');
+      }
     }
-  }
+  });
 }
 
 // Al hacer clic en un ramo
@@ -90,17 +98,4 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   actualizarDesbloqueos();
-
-  // Validación opcional: mostrar en consola los errores de ID
-  for (const [destino, reqs] of Object.entries(prerequisitos)) {
-    const elem = document.getElementById(destino);
-    if (!elem) console.warn(`⚠️ El ramo "${destino}" no existe en el HTML`);
-
-    reqs.forEach(r => {
-      const prereqElem = document.getElementById(r);
-      if (!prereqElem) {
-        console.warn(`⚠️ El prerrequisito "${r}" para "${destino}" no existe en el HTML`);
-      }
-    });
-  }
 });
